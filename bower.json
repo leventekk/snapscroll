@@ -2,10 +2,10 @@
   "name": "SnapScroll.js",
   "homepage": "https://github.com/leventekk/snapscroll",
   "authors": [
-    "Levente Kiraly <hello@leventekk.com>"
+    "Levente Kiraly"
   ],
-  "description": "scnap",
-  "main": "src/snapscroll.js",
+  "description": "SnapScroll",
+  "main": "dist/snapscroll.js",
   "moduleType": [
     "globals",
     "node"
@@ -14,14 +14,12 @@
     "snap",
     "scroll",
     "snapscroll",
-    "javascript",
-    "node"
+    "javascript"
   ],
   "license": "MIT",
   "ignore": [
     "**/.*",
     "node_modules",
-    "bower_components",
     "test",
     "tests"
   ],

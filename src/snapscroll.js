@@ -1,90 +1,92 @@
-(function() {
-  'use strict';
+const SnapScroll = (selector, options) => {
+    const defaults = {
+        proximity: 100,
+        duration: 200,
+        easing: time => time,
+        onSnapWait: 50,
+        ...options,
+    };
 
-  function SnapScroll(selector, options) {
-    var settings = Object.assign({
-      proximity: 100,
-      duration: 200,
-      easing: function(time) {
-        return time;
-      },
-      onSnapWait: 50
-    }, options);
+    const items = [...document.querySelectorAll(selector)];
+    let positions = [];
+    let snapTimeout;
+    let isScrolling;
 
-    var items = document.querySelectorAll(selector);
-    var positions = [];
-    var snapTimeout;
-    var isScrolling;
+    const getPositions = () => {
+        positions = items.map(item => ({
+            offset: item.offsetTop,
+            element: item,
+        }));
+    };
 
-    function getPositions() {
-      positions = [];
+    const animatedScrollTo = (scrollTargetY = 0, callback) => {
+        const { scrollY } = window;
+        let currentTime = 0;
+        const time = Math.max(0.1, Math.min(
+            Math.abs(scrollY - scrollTargetY) / defaults.duration, 0.8,
+        ));
 
-      for (var i = 0, l = items.length; i < l; i++) {
-        var item = items.item(i);
+        const tick = () => {
+            currentTime += 1 / 60;
+            const p = currentTime / time;
+            const t = defaults.easing(p);
 
-        positions.push({
-          offset: item.offsetTop,
-          element: item
-        });
-      }
-    }
+            if (p < 1) {
+                requestAnimationFrame(tick);
+                window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
+            } else {
+                window.scrollTo(0, scrollTargetY);
+                callback();
+            }
+        };
 
-    function animatedScrollTo(scrollTargetY, callback) {
-      scrollTargetY = scrollTargetY || 0;
+        tick();
+    };
 
-      var scrollY = window.scrollY;
-      var currentTime = 0;
-      var time = Math.max(0.1, Math.min(Math.abs(scrollY - scrollTargetY) / settings.duration, 0.8));
+    const snapToElement = () => {
+        const { scrollY } = window;
+        const snapElement = positions.find(element => element.offset - defaults.proximity <= scrollY
+            && element.offset + defaults.proximity >= scrollY);
 
-      function tick() {
-        currentTime += 1 / 60;
+        clearTimeout(snapTimeout);
 
-        var p = currentTime / time;
-        var t = settings.easing(p);
-
-        if (p < 1) {
-          requestAnimationFrame(tick);
-
-          window.scrollTo(0, scrollY + ((scrollTargetY - scrollY) * t));
-        } else {
-          window.scrollTo(0, scrollTargetY);
-          callback();
+        if (snapElement && !isScrolling) {
+            snapTimeout = setTimeout(() => {
+                isScrolling = true;
+                animatedScrollTo(snapElement.offset, () => {
+                    isScrolling = !isScrolling;
+                });
+            }, defaults.onSnapWait);
         }
-      }
-      tick();
-    }
+    };
 
-    function snapToElement() {
-      var scrollY = window.scrollY;
-      var snapElement = positions.filter(function(element) {
-        return element.offset - settings.proximity <= scrollY && element.offset + settings.proximity >= scrollY;
-      });
+    const recalculateLayout = () => {
+        getPositions();
+        snapToElement();
+    };
 
-      clearTimeout(snapTimeout);
+    const bindEvents = () => {
+        window.addEventListener('resize', recalculateLayout);
+        window.addEventListener('scroll', snapToElement);
+    };
 
-      if (snapElement.length && !isScrolling) {
-        snapTimeout = setTimeout(function() {
-          isScrolling = true;
-          animatedScrollTo(snapElement[0].offset, function() {
-            isScrolling = !isScrolling;
-          });
-        }, settings.onSnapWait);
-      }
-    }
+    const destroy = () => {
+        window.removeEventListener('resize', recalculateLayout);
+        window.removeEventListener('scroll', snapToElement);
+    };
 
-    function bindEvents() {
-      window.addEventListener('scroll', snapToElement);
-    }
+    const init = () => {
+        getPositions();
+        bindEvents();
+    };
 
-    getPositions();
-    bindEvents();
-  }
+    init();
 
-  if (typeof define === 'function') {
-    define(SnapScroll);
-  } else if (typeof module !== 'undefined') {
-    module.exports = SnapScroll;
-  } else {
-    window.SnapScroll = SnapScroll;
-  }
-})();
+    return {
+        init,
+        destroy,
+        recalculateLayout,
+    };
+};
+
+export default SnapScroll;
