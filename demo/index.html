@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>snapscroll demo</title>
+  <style>
+    body {
+      margin: 0;
+    }
+    .block {
+      height: 600px;
+    }
+    .block:nth-child(odd) {
+      background: #000;
+    }
+    .block:nth-child(even) {
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="block"></div>
+  <div class="block"></div>
+  <div class="block"></div>
+  <div class="block"></div>
+  <div class="block"></div>
+
+  <script src="../bower_components/easing/easing.js"></script>
+  <script src="../src/snapscroll.js"></script>
+  <script>
+    SnapScroll('.block');
+  </script>
+</body>
+</html>

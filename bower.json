@@ -1,0 +1,29 @@
+{
+  "name": "SnapScroll.js",
+  "homepage": "https://github.com/leventekk/snapscroll",
+  "authors": [
+    "Levente Kiraly <hello@leventekk.com>"
+  ],
+  "description": "scnap",
+  "main": "src/snapscroll.js",
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "snap",
+    "scroll",
+    "snapscroll",
+    "javascript",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {}
+}
