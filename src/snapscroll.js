@@ -29,7 +29,9 @@ const SnapScroll = (selector, options) => {
         const tick = () => {
             currentTime += 1 / 60;
             const p = currentTime / time;
-            const t = defaults.easing(p);
+            let t = defaults.easing(p);
+            // easeInQuad
+            t = t * (2 - t);
 
             if (p < 1) {
                 requestAnimationFrame(tick);
